@@ -14,6 +14,7 @@ function index(req, res) {
     if (err) return res.status(500).json({ error: "Database query failed" });
     res.json(results);
   });
+
   // let filteredPostsList = postsList;
   // //Se la richiesta contiene un filtro, allora filtro la lista dei post
   // if (req.query.tags) {
