@@ -1,21 +1,30 @@
 // import array che contiene i post
-const postsList = require("../data/posts");
+// const postsList = require("../data/posts");
+
+// import file di connessione al database
+const connection = require("../data/db");
 
 //funzioni delle operazioni CRUD, ognuna con logica corrispondente:
 function index(req, res) {
-  let filteredPostsList = postsList;
+  // preparo la query
+  const sql = "SELECT * FROM posts";
 
-  //Se la richiesta contiene un filtro, allora filtro la lista dei post
-  if (req.query.tags) {
-    filteredPostsList = postsList.filter((post) =>
-      post.tags.includes(req.query.tags),
-    );
-  }
-
-  res.json({
-    total: filteredPostsList.length,
-    posts: filteredPostsList,
+  // eseguo la query
+  connection.query(sql, (err, results) => {
+    if (err) return res.status(500).json({ error: "Database query failed" });
+    res.json(results);
   });
+  // let filteredPostsList = postsList;
+  // //Se la richiesta contiene un filtro, allora filtro la lista dei post
+  // if (req.query.tags) {
+  //   filteredPostsList = postsList.filter((post) =>
+  //     post.tags.includes(req.query.tags),
+  //   );
+  // }
+  // res.json({
+  //   total: filteredPostsList.length,
+  //   posts: filteredPostsList,
+  // });
 }
 
 function show(req, res) {
