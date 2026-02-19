@@ -29,23 +29,38 @@ function index(req, res) {
 }
 
 function show(req, res) {
-  const post = postsList.find((post) => post.id === parseInt(req.params.id));
+  const id = parseInt(req.params.id);
 
-  //introduco errore per test middleware errore 500
-  // throw new Error("Errore di test middleware");
+  // su postman: http://localhost:3000/posts/5; DROP TABLE posts;
+  // const sql = "SELECT * FROM posts WHERE id = ${id}";
+  const sql = "SELECT * FROM posts WHERE id = ?";
+  connection.query(sql, [id], (err, results) => {
+    // connection.query(sql, (err, results) => {
+    if (err) return res.status(500).json({ error: "Database query failed" });
+    if (results.length === 0)
+      return res.status(404).json({ error: "Post not found" });
+    // restituisco il post in formato JSON
+    res.json(results[0]);
+    // res.json(results);
+  });
 
-  // Faccio il controllo
-  if (!post) {
-    //Imposto lo status 404
-    res.status(404);
+  //   const post = postsList.find((post) => post.id === parseInt(req.params.id));
 
-    // Restituisco un JSON con le altre informazioni
-    return res.json({
-      error: "Not Found",
-      message: "post non trovata",
-    });
-  }
-  res.json(post);
+  //   //introduco errore per test middleware errore 500
+  //   // throw new Error("Errore di test middleware");
+
+  //   // Faccio il controllo
+  //   if (!post) {
+  //     //Imposto lo status 404
+  //     res.status(404);
+
+  //     // Restituisco un JSON con le altre informazioni
+  //     return res.json({
+  //       error: "Not Found",
+  //       message: "post non trovata",
+  //     });
+  //   }
+  //   res.json(post);
 }
 
 function store(req, res) {
