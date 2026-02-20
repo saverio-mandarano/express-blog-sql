@@ -45,8 +45,6 @@ function show(req, res) {
     if (err) return res.status(500).json({ error: "Database query failed" });
     if (postResults.length === 0)
       return res.status(404).json({ error: "Post not found" });
-    // restituisco il post in formato JSON
-    // res.json(results[0]);
 
     //recupero il post
     const post = postResults[0];
@@ -155,12 +153,30 @@ function destroy(req, res) {
   // recupero l'id dall' URL
   const { id } = req.params;
 
-  const sql = "DELETE FROM posts WHERE id = ?";
-  //Elimino la pizza dal menu
-  connection.query(sql, [id], (err) => {
-    if (err) return res.status(500).json({ error: "Failed to delete posts" });
-    res.sendStatus(204);
+  //query per il post
+  const postSql = "SELECT * FROM posts WHERE id = ?";
+
+  //query per eliminare il post
+  const deletePostSql = "DELETE FROM posts WHERE id = ?";
+
+  //eseguo la prima query per verificare che il post con quell'id esita
+  connection.query(postSql, [id], (err, results) => {
+    if (err) return res.status(500).json({ error: "Database query failed" });
+    if (results.length === 0)
+      return res.status(404).json({ error: "Post not found" });
+
+    //se è andata bene, eseguo la seconda query per eliminare il post
+    connection.query(deletePostSql, [id], (err) => {
+      if (err) return res.status(500).json({ error: "Failed to delete posts" });
+      res.sendStatus(204);
+    });
   });
+
+  //Elimino la pizza dal menu
+  // connection.query(sql, [id], (err) => {
+  //   if (err) return res.status(500).json({ error: "Failed to delete posts" });
+  //   res.sendStatus(204);
+  // });
 
   // const id = parseInt(req.params.id);
   // const post = postsList.find((post) => post.id === id);
