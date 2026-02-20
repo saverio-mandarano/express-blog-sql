@@ -132,6 +132,20 @@ function store(req, res) {
 }
 
 function update(req, res) {
+  // recuperiamo l'id dall' URL
+  const { id } = req.params;
+  // recuperiamo i dati dal body della richiesta
+  const { title, content, image } = req.body;
+  // Prepariamo la query per aggiornare la pizza
+  upSql = `
+  UPDATE posts 
+  SET title = ?, content = ?, image = ? 
+  WHERE id = ?
+  `;
+  connection.query(upSql, [title, content, image, id], (err) => {
+    if (err) return res.status(500).json({ error: "Failed to update post" });
+    res.json({ message: "Post updated successfully" });
+  });
   // console.log(req.body);
   // const id = parseInt(req.params.id);
   // const post = postsList.find((post) => post.id === id);
