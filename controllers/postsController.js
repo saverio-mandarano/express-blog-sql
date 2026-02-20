@@ -64,102 +64,100 @@ function show(req, res) {
 }
 
 function store(req, res) {
-  console.log(req.body);
-
-  // Creiamo un nuovo id incrementando l'ultimo id presente
-  const newId = postsList[postsList.length - 1].id + 1;
-  // Creiamo un nuovo oggetto post
-  const newPost = {
-    id: newId,
-    title: req.body.title,
-    content: req.body.content,
-    image: req.body.image,
-    tags: req.body.tags,
-  };
-  // Aggiungiamo la nuova pizza al postsList
-  postsList.push(newPost);
-
-  // controlliamo
-  console.log(postsList);
-  // Restituiamo lo status corretto e la pizza appena creata
-  res.status(201);
-  res.json(newPost);
+  // console.log(req.body);
+  // // Creiamo un nuovo id incrementando l'ultimo id presente
+  // const newId = postsList[postsList.length - 1].id + 1;
+  // // Creiamo un nuovo oggetto post
+  // const newPost = {
+  //   id: newId,
+  //   title: req.body.title,
+  //   content: req.body.content,
+  //   image: req.body.image,
+  //   tags: req.body.tags,
+  // };
+  // // Aggiungiamo la nuova pizza al postsList
+  // postsList.push(newPost);
+  // // controlliamo
+  // console.log(postsList);
+  // // Restituiamo lo status corretto e la pizza appena creata
+  // res.status(201);
+  // res.json(newPost);
 }
 
 function update(req, res) {
-  console.log(req.body);
-  const id = parseInt(req.params.id);
-  const post = postsList.find((post) => post.id === id);
-
-  if (!post) {
-    res.status(404);
-
-    return res.json({
-      status: 404,
-      error: "Not Found",
-      message: "Post non trovato",
-    });
-  }
-
-  // Aggiorniamo il post
-  post.title = req.body.title;
-  post.image = req.body.image;
-  post.content = req.body.content;
-  post.tags = req.body.tags;
-
-  // Controlliamo la lista dei post
-  console.log(postsList);
-  // Restituiamo la post appena aggiornata
-  res.json(post);
+  // console.log(req.body);
+  // const id = parseInt(req.params.id);
+  // const post = postsList.find((post) => post.id === id);
+  // if (!post) {
+  //   res.status(404);
+  //   return res.json({
+  //     status: 404,
+  //     error: "Not Found",
+  //     message: "Post non trovato",
+  //   });
+  // }
+  // // Aggiorniamo il post
+  // post.title = req.body.title;
+  // post.image = req.body.image;
+  // post.content = req.body.content;
+  // post.tags = req.body.tags;
+  // // Controlliamo la lista dei post
+  // console.log(postsList);
+  // // Restituiamo la post appena aggiornata
+  // res.json(post);
 }
 
 function modify(req, res) {
-  console.log(req.body);
-  const id = parseInt(req.params.id);
-  const post = postsList.find((post) => post.id === id);
-
-  if (!post) {
-    res.status(404);
-
-    return res.json({
-      status: 404,
-      error: "Not Found",
-      message: "Post non trovato",
-    });
-  }
-
-  // Aggiorniamo il post
-  req.body.title ? (post.title = req.body.title) : (post.title = post.title);
-  req.body.image ? (post.image = req.body.image) : (post.image = post.image);
-  req.body.tags ? (post.tags = req.body.tags) : (post.tags = post.tags);
-  req.body.content
-    ? (post.content = req.body.content)
-    : (post.content = post.content);
-
-  // Controlliamo la lista dei post
-  console.log(postsList);
-  // Restituiamo la post appena aggiornata
-  res.json(post);
+  // console.log(req.body);
+  // const id = parseInt(req.params.id);
+  // const post = postsList.find((post) => post.id === id);
+  // if (!post) {
+  //   res.status(404);
+  //   return res.json({
+  //     status: 404,
+  //     error: "Not Found",
+  //     message: "Post non trovato",
+  //   });
+  // }
+  // // Aggiorniamo il post
+  // req.body.title ? (post.title = req.body.title) : (post.title = post.title);
+  // req.body.image ? (post.image = req.body.image) : (post.image = post.image);
+  // req.body.tags ? (post.tags = req.body.tags) : (post.tags = post.tags);
+  // req.body.content
+  //   ? (post.content = req.body.content)
+  //   : (post.content = post.content);
+  // // Controlliamo la lista dei post
+  // console.log(postsList);
+  // // Restituiamo la post appena aggiornata
+  // res.json(post);
 }
 
 function destroy(req, res) {
-  const id = parseInt(req.params.id);
-  const post = postsList.find((post) => post.id === id);
+  // recupero l'id dall' URL
+  const { id } = req.params;
 
-  if (!post) {
-    res.status(404);
+  const sql = "DELETE FROM posts WHERE id = ?";
+  //Elimino la pizza dal menu
+  connection.query(sql, [id], (err) => {
+    if (err) return res.status(500).json({ error: "Failed to delete posts" });
+    res.sendStatus(204);
+  });
 
-    return res.json({
-      status: 404,
-      error: "Not Found",
-      message: "Post non trovato",
-    });
-  }
-  // Rimuovo post dalla lista
-  postsList.splice(postsList.indexOf(post), 1);
-  console.log(`lista aggiornata`);
-  console.log(postsList);
-  res.sendStatus(204);
+  // const id = parseInt(req.params.id);
+  // const post = postsList.find((post) => post.id === id);
+  // if (!post) {
+  //   res.status(404);
+  //   return res.json({
+  //     status: 404,
+  //     error: "Not Found",
+  //     message: "Post non trovato",
+  //   });
+  // }
+  // // Rimuovo post dalla lista
+  // postsList.splice(postsList.indexOf(post), 1);
+  // console.log(`lista aggiornata`);
+  // console.log(postsList);
+  // res.sendStatus(204);
 }
 
 module.exports = { index, show, store, update, modify, destroy };
