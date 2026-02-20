@@ -81,6 +81,36 @@ function show(req, res) {
 }
 
 function store(req, res) {
+  //recuperiamo i dati dal corpo della richiesta
+  const { title, content, image } = req.body;
+
+  // prepariamo la query
+  const sql = `
+    INSERT
+    INTO posts (title, content, image)
+    VALUES (?, ?, ?)
+  `;
+
+  // eseguiamo la query
+  connection.query(sql, [title, content, image], (err, results) => {
+    if (err) return res.status(500).json({ error: "Failed to insert pizza" });
+    // console.log(results);
+    //res.json({ id: results.insertId }); // restituiamo l'id assegnato dal DB
+
+    //recupero id
+    const postId = results.insertId;
+
+    //query per il post
+    const postSql = `SELECT * FROM posts WHERE id = ${postId}`;
+
+    connection.query(postSql, (err, postResults) => {
+      if (err) return res.status(500).json({ error: "Database query failed" });
+      if (postResults.length === 0)
+        return res.status(404).json({ error: "Post not found" });
+      res.status(201).json(postResults[0]);
+    });
+  });
+
   // console.log(req.body);
   // // Creiamo un nuovo id incrementando l'ultimo id presente
   // const newId = postsList[postsList.length - 1].id + 1;
