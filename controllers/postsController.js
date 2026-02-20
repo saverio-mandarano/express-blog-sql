@@ -31,17 +31,36 @@ function index(req, res) {
 function show(req, res) {
   const id = parseInt(req.params.id);
 
-  // su postman: http://localhost:3000/posts/5; DROP TABLE posts;
-  // const sql = "SELECT * FROM posts WHERE id = ${id}";
-  const sql = "SELECT * FROM posts WHERE id = ?";
-  connection.query(sql, [id], (err, results) => {
-    // connection.query(sql, (err, results) => {
+  //query per il post
+  const postSql = "SELECT * FROM posts WHERE id = ?";
+
+  //query per i tags del post
+  const tagsSql = `SELECT tags.*
+  FROM tags
+  JOIN post_tag ON tags.id = post_tag.tag_id
+  WHERE post_tag.post_id = ?;`;
+
+  //Eseguo la prima query per il post
+  connection.query(postSql, [id], (err, postResults) => {
     if (err) return res.status(500).json({ error: "Database query failed" });
-    if (results.length === 0)
+    if (postResults.length === 0)
       return res.status(404).json({ error: "Post not found" });
     // restituisco il post in formato JSON
-    res.json(results[0]);
-    // res.json(results);
+    // res.json(results[0]);
+
+    //recupero il post
+    const post = postResults[0];
+
+    //se è andata bene, eseguo la seconda query per i tags del post
+    connection.query(tagsSql, [id], (err, tagsResults) => {
+      if (err) return res.status(500).json({ error: "Database query failed" });
+      if (tagsResults.length === 0)
+        return res.status(404).json({ error: "tags not found" });
+
+      // Aggiungo i tags al post
+      post.tags = tagsResults;
+      res.json(post);
+    });
   });
 
   //   const post = postsList.find((post) => post.id === parseInt(req.params.id));
